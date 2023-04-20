@@ -1,3 +1,12 @@
+from immowelt import ImmoWebScraper
+from getlinks import GetLinks
+import pandas as pd
+import time
+
+
+start = time.time()
+
+
 url = "https://www.immowelt.de/liste/hamburg/wohnungen/mieten?sort=relevanz"
 
 get_links = GetLinks(url)
@@ -22,3 +31,6 @@ for link in expose_links:
     data.append(row)
 
 df = pd.DataFrame(data)
+
+end = time.time()
+print('Time taken to run: ', end - start)
