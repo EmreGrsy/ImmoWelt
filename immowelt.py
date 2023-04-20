@@ -4,7 +4,7 @@ import re
 import pandas as pd
 from datetime import datetime
 
-class ImmoWeltScraper:
+class ImmoWebScraper:
     """
     This class implements a web scraper for the immowelt.de website, which extracts information from real estate listings.
 
@@ -21,6 +21,8 @@ class ImmoWeltScraper:
         get_living_space: Extracts the living space of the listing.
         get_room_number: Extracts the number of rooms of the listing.
         get_timestamp: Returns the current timestamp.
+        get_detail_object: Returns flat details.
+        get_detail_furnishing: Returns furnishing details of the flat.
         scrape: Executes all the above methods and returns the extracted information as a Pandas DataFrame.
     """
 
@@ -30,82 +32,82 @@ class ImmoWeltScraper:
         self.elements = BeautifulSoup(self.page.content, "html.parser")
         
     def get_title(self):
-        title = self.elements.find('h1').text.strip()
+        try:
+            title = self.elements.find('h1').text.strip()
+        except AttributeError:
+            title = None
         return title
     
     def get_address(self):
         addresses = self.elements.find_all('span', {'data-cy': re.compile(r'.*address.*')})
         address_details = []
         for address in addresses:
-            address_text = address.text.strip().replace('\n', '')
-            address_text = re.sub(r'\s+', ' ', address_text)
-            address_details.append(address_text)
+            try:
+                address_text = address.text.strip().replace('\n', '')
+                address_text = re.sub(r'\s+', ' ', address_text)
+                address_details.append(address_text)
+            except AttributeError:
+                pass
         address = ', '.join(address_details)
         return address
     
     def get_cold_rent(self):
-        cold_rent_entries = self.elements.find_all('div', {'class': re.compile(r'.*hardfacts.*')})
-        cold_price = []
-        for cold_rent in cold_rent_entries:
-            if cold_rent.find('div', string=re.compile(r'.*Kaltmiete.*')):
-                cold_rent = cold_rent.find_parent('div').find('strong').text.strip()
-                cold_rent = re.sub(r'[^\d,]+', '', cold_rent).replace(',', '.')
-                cold_rent = float(cold_rent)
-                cold_price.append(cold_rent)
-            if cold_price:
-                cost = cold_price[0]
-            else:
-                cost = None
-            return cost
+        cold_rent = None
+        try: 
+            cold_rent = self.elements.find('div', string=re.compile(r'.*Kaltmiete.*'))
+            cold_rent = cold_rent.find_parent('div').find('strong').text.strip()
+            cold_rent = re.sub(r'[^\d,]+', '', cold_rent).replace(',', '.')
+            cold_rent = float(cold_rent)
+        except AttributeError:
+            pass
+        return cold_rent
 
     def get_warm_rent(self):
-        warm_rent_entries = self.elements.find_all('sd-cell-col', {'class': re.compile(r'.*color.*')})
-        warm_price = []
-        for warm_rent in warm_rent_entries:
-            if warm_rent.text.strip() == "Warmmiete":
-                warm_cost = warm_rent.find_next_sibling("sd-cell-col").text.strip()
-                warm_cost = re.sub(r'[^\d,]+', '', warm_cost).replace(',', '.')
-                warm_cost = float(warm_cost)
-                warm_price.append(warm_cost)
-        if warm_price:
-            cost = warm_price[0]
-        else:
-            cost = None
-        return cost
-    
+        warm_rent_entries = self.elements.find_all('sd-cell-col', re.compile(r'.*color.*'))
+        warm_rent = None
+        try:
+            warm_rent = next(warm_rent for warm_rent in warm_rent_entries if warm_rent.text.strip() == "Warmmiete")
+            warm_cost = warm_rent.find_next_sibling("sd-cell-col").text.strip()
+            warm_cost = re.sub(r'[^\d,]+', '', warm_cost).replace(',', '.')
+            warm_cost = float(warm_cost)
+            return warm_cost
+        except (StopIteration, AttributeError):
+            return None
+
     def get_deposit(self):
-        deposit = self.elements.find_all('div', {'data-cy': re.compile(r'.*depos.*')})
-        deposits = []
-        if deposit:
-            deposit_amount = deposit[0].find('p', {'class': 'card-content'}).text.strip()
-            deposit_amount = re.sub(r'[^\d,]+', '', deposit_amount).replace(',', '.')
-            deposits.append(float(deposit_amount))
-        # Having a deposit lower the 500 is not possible, probably they have written something like "3times the cold rent bla bla"
-        # but I don't care adding that information.
-        if deposits and deposits[0] > 500:
-            deposit = deposits[0]
-        else:
-            deposit = None
+        deposit = None
+        try:
+            deposit_entries = self.elements.find_all('div', {'data-cy': re.compile(r'.*depos.*')})
+            if deposit_entries:
+                deposit_amount = deposit_entries[0].find('p', {'class': 'card-content'}).text.strip()
+                deposit_amount = re.sub(r'[^\d,]+', '', deposit_amount).replace(',', '.')
+                deposit = float(deposit_amount)
+                # Having a deposit lower the 500 is not possible, 
+                # probably it states something like "3 times the cold rent".
+                if deposit <= 500:
+                    deposit = None
+        except AttributeError:
+            pass
         return deposit
-    
+
     def get_living_space(self):
-        areas = self.elements.find_all('div', {'class': re.compile(r'.*hardfacts.*')})
         living_space = None
-        for area in areas:
-            size_text = area.find('div', string=re.compile(r'.*Wohnfläche.*'))
-            if size_text:
-                living_space = float(size_text.find_parent('div').find('span').text.strip().split()[0].replace(',', '.'))
-                break
+        try:
+            living_space = self.elements.find('div',string=re.compile(r'.*Wohnfläche.*'))
+            living_space = living_space.find_parent('div').find('span').text.strip().split()[0].replace(',', '.')
+            living_space = float(living_space)
+        except AttributeError:
+             pass
         return living_space
 
     def get_room_number(self):
-        areas = self.elements.find_all('div', {'class': re.compile(r'.*hardfacts.*')})
         room_number = None
-        for area in areas:
-            room_text = area.find('div', string=re.compile(r'.*Zimmer.*'))
-            if room_text:
-                room_number = room_text.find_parent('div').find('span').text.strip()
-                break
+        try:
+            room_number = self.elements.find('div', string=re.compile(r'.*Zimmer.*'))
+            room_number = room_number.find_parent('div').find('span').text.strip().replace(',', '.')
+            room_number = float(room_number)
+        except AttributeError:
+            pass
         return room_number
     
     def get_detail_object(self):
