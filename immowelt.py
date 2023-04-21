@@ -109,6 +109,40 @@ class ImmoWebScraper:
         except AttributeError:
             pass
         return room_number
+        
+    def get_flat_info(self):   
+        details = []
+        for element in self.elements.find_all('h2'):
+            if element.text.strip() == 'Die Wohnung':
+                try:
+                    equipment = element.find_next_sibling('div', class_='equipment')
+                    category = equipment.find('p', string='Kategorie').find_next_sibling('p').text.strip()
+                except AttributeError:
+                    category = None
+                try:
+                    location = equipment.find('p', string='Wohnungslage').find_next_sibling('p').text.strip()
+                except AttributeError:
+                    location = None
+                try:
+                    bezung = equipment.find('p', string='Bezug').find_next_sibling('p').text.strip()
+                except AttributeError:
+                    bezung = None
+                try:
+                    amenities = element.find_next_sibling('div', class_='textlist--icon')
+                    amenities_list = ', '.join([amenity.text.strip() for amenity in amenities.find_all('li')])
+                except AttributeError:
+                    amenities_list = None
+
+                details.append(f"Category: {category}, Floor: {location}, Bezug: {bezung}, Amenities: {amenities_list}")
+        for element in self.elements.find_all('h3'):
+            if element.text.strip() == 'Wohnanlage':     
+                try:
+                    baujahr = element.find_next_sibling('div').find('li').text.split()[1]
+                except AttributeError:
+                    baujahr = None
+                
+                details[-1] += f", Baujahr: {baujahr}"
+        return details
     
     def get_detail_object(self):
         details = self.elements.find_all('h3')
@@ -116,9 +150,6 @@ class ImmoWebScraper:
         for detail in details:
             if detail.text.strip() == 'Objektbeschreibung':
                 object = detail.next_sibling.find('p').text
-                object = object.split('...')[0]
-                object = object.split('Außerdem')[0]
-                object = object.strip()
                 if not object:
                     object = None
                 break
@@ -130,13 +161,21 @@ class ImmoWebScraper:
         for detail in details:
             if detail.text.strip() == 'Ausstattung':
                 furnishing = detail.next_sibling.find('p').text
-                furnishing = furnishing.split('...')[0]
-                furnishing = furnishing.split('Außerdem')[0]
-                furnishing = furnishing.strip()
                 if not furnishing:
                     furnishing = None      
                 break
         return furnishing
+
+    def get_detail_extra(self):
+        details = self.elements.find_all('h3')
+        extra = None
+        for detail in details:
+            if detail.text.strip() == 'Weitere Informationen':
+                extra= detail.next_sibling.find('p').text
+                if not extra:
+                    extra = None      
+                break
+        return extra    
 
     def get_timestamp(self):
         now = datetime.now()
@@ -151,8 +190,10 @@ class ImmoWebScraper:
         deposit = self.get_deposit()
         living_space = self.get_living_space()
         room_number = self.get_room_number()
+        flat_info = self.get_flat_info()
         object_detail = self.get_detail_object()
         furnishing = self.get_detail_furnishing()
+        extra_detail = self.get_detail_extra()
         timestamp = self.get_timestamp()
 
         data = {
@@ -163,8 +204,10 @@ class ImmoWebScraper:
             'deposit': [deposit],
             'living_space': [living_space] if living_space else [None],
             'room_number': [room_number] if room_number else [None],
+            'flat_info': [flat_info],
             'timestamp': [timestamp],
             'object_detail': [object_detail],
+            'extra_detail': [extra_detail],
             'furnishing': [furnishing],
             'url': [self.url]
         }
