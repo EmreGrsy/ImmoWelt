@@ -3,9 +3,7 @@ from getlinks import GetLinks
 import pandas as pd
 import time
 
-
 start = time.time()
-
 
 url = "https://www.immowelt.de/liste/hamburg/wohnungen/mieten?sort=relevanz"
 
