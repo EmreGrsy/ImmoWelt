@@ -8,4 +8,9 @@ It needs
 - [x] Get rid off the redundant for loops.
 - [x] Scrap more information from the website.
 - [ ] Change getLinks class so it can gather all the website information.
+<<<<<<< HEAD
 - [ ] Change the saved data structure to CSV or SQL.
+=======
+- [ ] Change the saved data structure to CSV or SQL.
+
+>>>>>>> e12bc0789c68e59ea59ee1208e2f32df3fdc4c6f
