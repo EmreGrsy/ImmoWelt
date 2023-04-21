@@ -20,9 +20,10 @@ class ImmoWebScraper:
         get_deposit: Extracts the required deposit for the listing.
         get_living_space: Extracts the living space of the listing.
         get_room_number: Extracts the number of rooms of the listing.
-        get_timestamp: Returns the current timestamp.
+        get_query_time: Returns the query times.
         get_detail_object: Returns flat details.
         get_detail_furnishing: Returns furnishing details of the flat.
+        get_flat_info: Returns information about the flat (e.g. floor, age, date of availability etc.)
         scrape: Executes all the above methods and returns the extracted information as a Pandas DataFrame.
     """
 
@@ -142,6 +143,7 @@ class ImmoWebScraper:
                     baujahr = None
                 
                 details[-1] += f", Baujahr: {baujahr}"
+                details = ', '.join(details)
         return details
     
     def get_detail_object(self):
@@ -177,7 +179,7 @@ class ImmoWebScraper:
                 break
         return extra    
 
-    def get_timestamp(self):
+    def get_query_time(self):
         now = datetime.now()
         timestamp = now.strftime('%Y-%m-%d %H:%M:%S')
         return timestamp
@@ -194,7 +196,7 @@ class ImmoWebScraper:
         object_detail = self.get_detail_object()
         furnishing = self.get_detail_furnishing()
         extra_detail = self.get_detail_extra()
-        timestamp = self.get_timestamp()
+        timestamp = self.get_query_time()
 
         data = {
             'title': [title],
