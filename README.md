@@ -7,6 +7,6 @@ It needs
 - [x] More efficent coding with try/except.
 - [x] Get rid off the redundant for loops.
 - [x] Scrap more information from the website.
-- [ ] Change getLinks class so it can gather all the webiste information.
+- [ ] Change getLinks class so it can gather all the website information.
 - [ ] Change the saved data structure to CSV or SQL.
 
