@@ -7,13 +7,6 @@ import concurrent.futures
 
 start = time.time()
 
-url = "https://www.immowelt.de/liste/hamburg/wohnungen/mieten?sort=relevanz"
-
-get_links = GetLinks(url)
-expose_links = get_links.get_expose_links()
-
-data = []
-
 def scrape_data(link):
     scraper = ImmoWebScraper(link)
     row = {
@@ -33,10 +26,43 @@ def scrape_data(link):
     }
     return row
 
-with concurrent.futures.ThreadPoolExecutor() as executor:
-    results = list(tqdm(executor.map(scrape_data, expose_links), total=4))
 
-df = pd.DataFrame(results)
+# Define the base URL and query parameters
+base_url = "https://www.immowelt.de/liste/hamburg/wohnungen/mieten"
+params = {
+    "d": "true",
+    "sd": "DESC",
+    "sf": "RELEVANCE",
+    "cp": 1  # Start with the first page of results
+}
+
+data = []
+
+# Loop through all the pages of results
+while True:
+    # Construct the URL for the current page of results
+    url = f"{base_url}?{'&'.join([f'{k}={v}' for k, v in params.items()])}"
+
+    # Scrape the links to individual listings on the page
+    get_links = GetLinks(url)
+    expose_links = get_links.get_expose_links()
+
+    # Check if there are no more pages to scrape
+    if not expose_links:
+        break
+
+    # Scrape the data from each individual listing on the page
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        results = list(tqdm(executor.map(scrape_data, expose_links), total=len(expose_links)))
+
+    # Add the results to the master list
+    data.extend(results)
+
+    # Update the query parameters to get the next page of results
+    params["cp"] += 1
+
+# Convert the list of results to a Pandas DataFrame
+df = pd.DataFrame(data)
 
 end = time.time()
 print('Time taken to run: ', end - start)
