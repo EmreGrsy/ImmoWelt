@@ -1,7 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
 import re
-import pandas as pd
 from datetime import datetime
 
 class ImmoWebScraper:
@@ -133,7 +132,6 @@ class ImmoWebScraper:
                     amenities_list = ', '.join([amenity.text.strip() for amenity in amenities.find_all('li')])
                 except AttributeError:
                     amenities_list = None
-
                 details.append(f"Category: {category}, Floor: {location}, Bezug: {bezung}, Amenities: {amenities_list}")
         for element in self.elements.find_all('h3'):
             if element.text.strip() == 'Wohnanlage':     
@@ -214,5 +212,4 @@ class ImmoWebScraper:
             'url': [self.url]
         }
 
-        df = pd.DataFrame(data)
-        return df
+        return data
