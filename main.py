@@ -34,7 +34,7 @@ class Schedule:
     def construct_page_urls(self):
         urls = []
         for page in range(1, self.max_num_pages+1):
-            self.params["cp"] = page
+            self.params["sp"] = page
             url = f"{self.base_url}?{'&'.join([f'{k}={v}' for k, v in self.params.items()])}"
             urls.append(url)
         return urls
@@ -61,7 +61,6 @@ class Schedule:
             "availability" : scraper.get_availability(),
             "amenities" : scraper.get_amenities(),
             "built_year" : scraper.get_built_year(),
-            #"flat_info": scraper.get_flat_info(),
             "object_detail": scraper.get_detail_object(),
             "furnishing": scraper.get_detail_furnishing(),
             "extra": scraper.get_detail_extra(),
@@ -95,8 +94,7 @@ base_url = "https://www.immowelt.de/liste/hamburg/wohnungen/mieten"
 # I don't know how to limit the max page num.
 # If there are 41 pages and I give 50 max page num,
 # it turns back after 41 page and gets the first page again.
-max_num_pages = 41
-
+max_num_pages = 50
 
 start = time.time()
 scheduler = Schedule(base_url, max_num_pages)

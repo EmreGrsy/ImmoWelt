@@ -57,7 +57,8 @@ class ImmoWebScraper:
             cold_rent = self.elements.find('div', string=re.compile(r'.*Kaltmiete.*'))
             cold_rent = cold_rent.find_parent('div').find('strong').text.strip()
             cold_rent = re.sub(r'[^\d,]+', '', cold_rent).replace(',', '.')
-            cold_rent = float(cold_rent)
+            if cold_rent and not isinstance(cold_rent, str):
+                cold_rent = float(cold_rent)
         except AttributeError:
             pass
         return cold_rent
@@ -83,30 +84,16 @@ class ImmoWebScraper:
         return warm_rent
 
     def get_deposit(self):
-        deposit_entries = self.elements.find_all('div', {'data-cy': re.compile(r'.*depos.*')})
-        
-        if deposit_entries:
-            deposit_amount = deposit_entries[0].find('p', {'class': 'card-content'}).text.strip()
-
-            # Handling variations in the deposit amount string
-            if "Nettokaltmieten" in deposit_amount:
-                try:
-                    multiplier = int(deposit_amount.split()[0])
-                    cold_rent = self.get_cold_rent()
-                    if cold_rent is not None:
-                        deposit = cold_rent * multiplier
-                        return deposit
-                except (ValueError, IndexError):
-                    pass
-            
-            try:
+        deposit = None
+        try:
+            deposit_entries = self.elements.find_all('div', {'data-cy': re.compile(r'.*depos.*')})
+            if deposit_entries:
+                deposit_amount = deposit_entries[0].find('p', {'class': 'card-content'}).text.strip()
                 deposit_amount = re.sub(r'[^\d,]+', '', deposit_amount).replace(',', '.')
-                deposit = float(deposit_amount)
-                return deposit
-            except AttributeError:
-                pass
-        
-        return None
+                deposit = deposit_amount
+        except AttributeError:
+            pass
+        return deposit
 
     def get_living_space(self):
         living_space = None
@@ -123,7 +110,8 @@ class ImmoWebScraper:
         try:
             room_number = self.elements.find('div', string=re.compile(r'.*Zimmer.*'))
             room_number = room_number.find_parent('div').find('span').text.strip().replace(',', '.')
-            room_number = float(room_number)
+            if room_number and not isinstance(room_number, str):
+                room_number = float(room_number)
         except AttributeError:
             pass
         return room_number
@@ -182,7 +170,7 @@ class ImmoWebScraper:
                 try:
                     baujahr = element.find_next_sibling('div').find('li').text.split()[1]
                     built_year = baujahr
-                except AttributeError:
+                except (AttributeError, IndexError):
                     pass
         return built_year
     
