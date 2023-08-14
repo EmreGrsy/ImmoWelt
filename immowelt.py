@@ -72,23 +72,59 @@ class ImmoWebScraper:
             warm_cost = float(warm_cost)
             return warm_cost
         except (StopIteration, AttributeError):
+            pass
+        try: 
+            warm_rent = self.elements.find('div', string=re.compile(r'.*Warmmiete.*'))
+            warm_rent = warm_rent.find_parent('div').find('strong').text.strip()
+            warm_rent = re.sub(r'[^\d,]+', '', warm_rent).replace(',', '.')
+            warm_rent = float(warm_rent)
+        except (StopIteration, AttributeError):
             return None
+        return warm_rent
 
     def get_deposit(self):
-        deposit = None
-        try:
-            deposit_entries = self.elements.find_all('div', {'data-cy': re.compile(r'.*depos.*')})
-            if deposit_entries:
-                deposit_amount = deposit_entries[0].find('p', {'class': 'card-content'}).text.strip()
+        deposit_entries = self.elements.find_all('div', {'data-cy': re.compile(r'.*depos.*')})
+        
+        if deposit_entries:
+            deposit_amount = deposit_entries[0].find('p', {'class': 'card-content'}).text.strip()
+
+            # Handling variations in the deposit amount string
+            if "Nettokaltmieten" in deposit_amount:
+                try:
+                    multiplier = int(deposit_amount.split()[0])
+                    cold_rent = self.get_cold_rent()
+                    if cold_rent is not None:
+                        deposit = cold_rent * multiplier
+                        return deposit
+                except (ValueError, IndexError):
+                    pass
+            
+            try:
                 deposit_amount = re.sub(r'[^\d,]+', '', deposit_amount).replace(',', '.')
                 deposit = float(deposit_amount)
-                # Having a deposit lower the 500 is not possible, 
-                # probably it states something like "3 times the cold rent".
-                if deposit <= 500:
-                    deposit = None
-        except AttributeError:
-            pass
-        return deposit
+                return deposit
+            except AttributeError:
+                pass
+        
+        return None
+
+
+
+ #   def get_deposit(self):
+ #       deposit = None
+ #       try:
+ #           deposit_entries = self.elements.find_all('div', {'data-cy': re.compile(r'.*depos.*')})
+ #           if deposit_entries:
+ #               deposit_amount = deposit_entries[0].find('p', {'class': 'card-content'}).text.strip()
+ #               deposit_amount = re.sub(r'[^\d,]+', '', deposit_amount).replace(',', '.')
+ #               deposit = float(deposit_amount)
+ #               # Having a deposit lower the 500 is not possible, 
+ #               # probably it states something like "3 times the cold rent".
+ #               if deposit <= 500:
+ #                   deposit = None
+ #       except AttributeError:
+ #           pass
+ #       return deposit
 
     def get_living_space(self):
         living_space = None
@@ -109,40 +145,98 @@ class ImmoWebScraper:
         except AttributeError:
             pass
         return room_number
-        
-    def get_flat_info(self):   
-        details = []
+    
+    def get_category(self):
+        category = None
         for element in self.elements.find_all('h2'):
             if element.text.strip() == 'Die Wohnung':
                 try:
                     equipment = element.find_next_sibling('div', class_='equipment')
                     category = equipment.find('p', string='Kategorie').find_next_sibling('p').text.strip()
                 except AttributeError:
-                    category = None
+                    pass
+        return category
+
+    def get_floor(self):
+        floor = None
+        for element in self.elements.find_all('h2'):
+            if element.text.strip() == 'Die Wohnung':
                 try:
-                    location = equipment.find('p', string='Wohnungslage').find_next_sibling('p').text.strip()
+                    equipment = element.find_next_sibling('div', class_='equipment')
+                    floor = equipment.find('p', string='Wohnungslage').find_next_sibling('p').text.strip()[0]
                 except AttributeError:
-                    location = None
+                    pass
+        return floor
+
+    def get_availability(self):
+        availability = None
+        for element in self.elements.find_all('h2'):
+            if element.text.strip() == 'Die Wohnung':
                 try:
-                    bezung = equipment.find('p', string='Bezug').find_next_sibling('p').text.strip()
+                    equipment = element.find_next_sibling('div', class_='equipment')
+                    availability = equipment.find('p', string='Bezug').find_next_sibling('p').text.strip()
+                    if availability == 'sofort':
+                        availability = datetime.today().strftime('%d.%m.%Y')
                 except AttributeError:
-                    bezung = None
+                    pass
+        return availability
+
+    def get_amenities(self):
+        amenities = None
+        for element in self.elements.find_all('h2'):
+            if element.text.strip() == 'Die Wohnung':
                 try:
-                    amenities = element.find_next_sibling('div', class_='textlist--icon')
-                    amenities_list = ', '.join([amenity.text.strip() for amenity in amenities.find_all('li')])
+                    amenities_block = element.find_next_sibling('div', class_='textlist--icon')
+                    amenities_list = [amenity.text.strip() for amenity in amenities_block.find_all('li')]
+                    amenities = ', '.join(amenities_list)
                 except AttributeError:
-                    amenities_list = None
-                details.append(f"Category: {category}, Floor: {location}, Bezug: {bezung}, Amenities: {amenities_list}")
+                    pass
+        return amenities
+
+    def get_built_year(self):
+        built_year = None
         for element in self.elements.find_all('h3'):
-            if element.text.strip() == 'Wohnanlage':     
+            if element.text.strip() == 'Wohnanlage':
                 try:
                     baujahr = element.find_next_sibling('div').find('li').text.split()[1]
+                    built_year = baujahr
                 except AttributeError:
-                    baujahr = None
-                
-                details[-1] += f", Baujahr: {baujahr}"
-                details = ', '.join(details)
-        return details
+                    pass
+        return built_year
+
+#    def get_flat_info(self):   
+#        details = []
+#        for element in self.elements.find_all('h2'):
+#            if element.text.strip() == 'Die Wohnung':
+#                try:
+#                    equipment = element.find_next_sibling('div', class_='equipment')
+#                    category = equipment.find('p', string='Kategorie').find_next_sibling('p').text.strip()
+#                except AttributeError:
+#                    category = None
+#                try:
+#                    location = equipment.find('p', string='Wohnungslage').find_next_sibling('p').text.strip()
+#                except AttributeError:
+#                    location = None
+#                try:
+#                    bezung = equipment.find('p', string='Bezug').find_next_sibling('p').text.strip()
+#                except AttributeError:
+#                    bezung = None
+#                try:
+#                    amenities = element.find_next_sibling('div', class_='textlist--icon')
+#                    amenities_list = ', '.join([amenity.text.strip() for amenity in amenities.find_all('li')])
+#                except AttributeError:
+#                    amenities_list = None
+#                details.append(f"Category: {category}, Floor: {location}, Bezug: {bezung}, Amenities: {amenities_list}")
+#        for element in self.elements.find_all('h3'):
+#            if element.text.strip() == 'Wohnanlage':     
+#                try:
+#                    baujahr = element.find_next_sibling('div').find('li').text.split()[1]
+#                except AttributeError:
+#                    baujahr = None
+#                
+#                details[-1] += f", Baujahr: {baujahr}"
+#                details = ', '.join(details)
+#        return details
     
     def get_detail_object(self):
         details = self.elements.find_all('h3')
@@ -190,7 +284,12 @@ class ImmoWebScraper:
         deposit = self.get_deposit()
         living_space = self.get_living_space()
         room_number = self.get_room_number()
-        flat_info = self.get_flat_info()
+        category = self.get_category()
+        floor = self.get_floor()
+        availability = self.get_availability()
+        amenities = self.get_amenities()
+        built_year = self.get_built_year()
+        #flat_info = self.get_flat_info()
         object_detail = self.get_detail_object()
         furnishing = self.get_detail_furnishing()
         extra_detail = self.get_detail_extra()
@@ -204,7 +303,12 @@ class ImmoWebScraper:
             'deposit': [deposit],
             'living_space': [living_space] if living_space else [None],
             'room_number': [room_number] if room_number else [None],
-            'flat_info': [flat_info],
+            'category' : [category],
+            'floor' : [floor],
+            'availability_date' : [availability],
+            'amenities' : [amenities],
+            'built_year' : [built_year],
+           # 'flat_info': [flat_info],
             'timestamp': [timestamp],
             'object_detail': [object_detail],
             'extra_detail': [extra_detail],
