@@ -23,6 +23,7 @@ class ImmoWeltScrapper:
         get_availability: Extracts the date when the listing is available for renting.
         get_amenities: Extracts amenities.
         get_built_year:Extracts the year the house was built.
+        get_energy_consumption: Extracts energy consumption (kWh/(m²·a)) 
         get_detail_object: Returns flat details.
         get_detail_furnishing: Returns furnishing details of the flat.
         get_query_time: Returns the query times.
@@ -209,6 +210,17 @@ class ImmoWeltScrapper:
                     extra = None      
                 break
         return extra    
+    
+    # Energy consumption unit kWh/(m²·a)
+    def get_energy_consumption(self):
+        consumption = None
+        try:
+            entries = self.elements.find('sd-cell-col',  {'data-cy':"energy-consumption"})
+            if entries:
+                consumption = entries.text.split()[1]
+        except AttributeError:
+            pass
+        return consumption
 
     def get_query_time(self):
         now = datetime.now()

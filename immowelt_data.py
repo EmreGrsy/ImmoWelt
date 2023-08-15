@@ -27,6 +27,7 @@ class ImmoWeltData:
             "availability": scraper.get_availability(),
             "amenities": scraper.get_amenities(),
             "built_year": scraper.get_built_year(),
+            "energy_consumption": scraper.get_energy_consumption(),
             "object_detail": scraper.get_detail_object(),
             "furnishing": scraper.get_detail_furnishing(),
             "extra": scraper.get_detail_extra(),

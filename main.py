@@ -3,7 +3,7 @@ import pandas as pd
 import time
 
 
-# Define the base URL
+# Define the base URL, hamburg rental units
 base_url = "https://www.immowelt.de/liste/hamburg/wohnungen/mieten"
 
 start = time.time()
