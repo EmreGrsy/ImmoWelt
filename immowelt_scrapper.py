@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import re
 from datetime import datetime
 
-class ImmoWebScraper:
+class ImmoWeltScrapper:
     """
     This class implements a web scraper for the immowelt.de website, which extracts information from real estate listings.
 
@@ -19,10 +19,13 @@ class ImmoWebScraper:
         get_deposit: Extracts the required deposit for the listing.
         get_living_space: Extracts the living space of the listing.
         get_room_number: Extracts the number of rooms of the listing.
-        get_query_time: Returns the query times.
+        get_category: Extracts the type of the listing, e.g. apartment, mansion etc.
+        get_availability: Extracts the date when the listing is available for renting.
+        get_amenities: Extracts amenities.
+        get_built_year:Extracts the year the house was built.
         get_detail_object: Returns flat details.
         get_detail_furnishing: Returns furnishing details of the flat.
-        get_flat_info: Returns information about the flat (e.g. floor, age, date of availability etc.)
+        get_query_time: Returns the query times.
         scrape: Executes all the above methods and returns the extracted information as a Pandas DataFrame.
     """
 
@@ -211,7 +214,7 @@ class ImmoWebScraper:
         now = datetime.now()
         timestamp = now.strftime('%Y-%m-%d %H:%M:%S')
         return timestamp
-
+'''
     def scrape(self):
         title = self.get_title()
         address = self.get_address()
@@ -251,3 +254,4 @@ class ImmoWebScraper:
         }
 
         return data
+'''
