@@ -1,15 +1,12 @@
-# ImmoWelt
-A simple websrapper for ImmoWelt
+# ImmoWelt Chatbot
 
+A webscrapper/chatbot for rental apartments in Hamburg.
 
-A webscrapper for rental apartments in Hamburg.
-
-(i) Text descriptions are not parsing, fix it. (done)
-Make the parse file cleaner and concise.
-(ii) Save the parsed data to a JSON file.(done)
-(iii) Build the necessary libraries and push it Repo. (done)
-(iv) Configure the logging for necessary stuff, and try AWS.
-(v) It should mail errors, but not info.
-(vi) Use LLM to translate the data.
-(vii) Build a RAG chatbot in local.
-
+- [x] Text descriptions are not parsing, fix it.
+- [x] Make the parse file cleaner and concise.
+- [x] Save the parsed data to a JSON file.
+- [x] Build the necessary libraries and push it Repo.
+- [ ] Configure the logging for necessary stuff.
+- [ ] It should mail errors, but not info.
+- [ ] Use LLM to translate the data.
+- [ ] Build a RAG chatbot in local.

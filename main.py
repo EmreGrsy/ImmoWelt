@@ -14,7 +14,6 @@ logging.basicConfig(
     handlers=[logging.FileHandler("info.log"), logging.StreamHandler()],
 )
 
-
 base_url = "https://www.immowelt.de/liste/hamburg/wohnungen/mieten"
 
 all_urls_scraper = AllURLs(base_url)
