@@ -104,7 +104,11 @@ class ImmoWeltScrapper:
         try:
             living_space = self.elements.find('div',string=re.compile(r'.*Wohnfläche.*'))
             living_space = living_space.find_parent('div').find('span').text.strip().split()[0].replace(',', '.')
-            living_space = float(living_space)
+            # Check if the living_space can be converted to float
+            if re.match(r'^\d+(\.\d+)?$', living_space):
+                living_space = float(living_space)
+            else:
+                living_space = None  # If it can't be converted, set it to None
         except AttributeError:
              pass
         return living_space

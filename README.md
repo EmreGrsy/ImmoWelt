@@ -2,15 +2,14 @@
 A simple websrapper for ImmoWelt
 
 
-A webscrapper for apartments in Hamburg. I won't suggest anyone to use, currently its experimental.
+A webscrapper for rental apartments in Hamburg.
 
-- [ ] Can't fetch all the urls of the house listings, fix it.
-- [ ] Clean the main function.
-- [ ] Send the database to a Sql server.
-```mermaid
-  graph TD;
-      A-->B;
-      A-->C;
-      B-->D;
-      C-->D;
-```
+(i) Text descriptions are not parsing, fix it. (done)
+Make the parse file cleaner and concise.
+(ii) Save the parsed data to a JSON file.(done)
+(iii) Build the necessary libraries and push it Repo. (done)
+(iv) Configure the logging for necessary stuff, and try AWS.
+(v) It should mail errors, but not info.
+(vi) Use LLM to translate the data.
+(vii) Build a RAG chatbot in local.
+
