@@ -1,6 +1,6 @@
-# ImmoWelt Chatbot
+# ImmoWelt webscapper
 
-A webscrapper/chatbot for rental apartments in Hamburg.
+A webscrapper (hopefully turned into a chatbot) for rental apartments in Hamburg.
 
 - [x] Text descriptions are not parsing, fix it.
 - [x] Make the parse file cleaner and concise.
