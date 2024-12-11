@@ -1,10 +1,25 @@
 # ImmoWelt Web Scraper
 
-A tool to extract rental apartments data in Hamburg from ImmoWelt, hopefully (when I have time) will turn this into  Hamburg real estate chatbot.
+A tool to extract rental apartment data in Hamburg from ImmoWelt, with plans to expand into a Hamburg real estate chatbot.
 
 ## Features
 
 ### Completed
+- Extracts key housing data, including:
+  - **id**: Unique listing identifier
+  - **url**: Property listing URL
+  - **title**: Listing title
+  - **creationDate**: Listing creation date
+  - **updateDate**: Last update date
+  - **city, zipCode, street, district**: Address details
+  - **coordinates**: Geographic coordinates (if published)
+  - **locationDescription**: Description of the location
+  - **hardFacts**: Property details (e.g., rooms, area)
+  - **textDetails**: Additional descriptive text
+  - **energyFeatures**: Energy-related features and certificates
+  - **energyRating**: Energy efficiency class and requirements
+  - **housePrices**: Price details
+  - **details**: Other property features (e.g., amenities)
 - Fixed text description parsing.
 - Simplified and optimized parsing logic.
 - Saved parsed data to JSON.
@@ -20,13 +35,3 @@ A tool to extract rental apartments data in Hamburg from ImmoWelt, hopefully (wh
 1. Clone the repository:
    ```bash
    git clone https://github.com/<your-username>/ImmoWelt-web-scraper.git
-   ```
-2. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. Run the scraper:
-   ```bash
-   python scraper.py
-   ```
-4. Find the parsed data in `data.json`.
