@@ -2,9 +2,7 @@
 
 A tool to extract rental apartment data in Hamburg from ImmoWelt, with plans to expand into a Hamburg real estate chatbot.
 
-## Features
-
-### Completed
+### Features
 - Extracts key housing data, including:
   - **id**: Unique listing identifier
   - **url**: Property listing URL
@@ -20,11 +18,7 @@ A tool to extract rental apartment data in Hamburg from ImmoWelt, with plans to 
   - **energyRating**: Energy efficiency class and requirements
   - **housePrices**: Price details
   - **details**: Other property features (e.g., amenities)
-- Fixed text description parsing.
-- Simplified and optimized parsing logic.
-- Saved parsed data to JSON.
-- Set up necessary libraries.
-
+    
 ### TODO
 - Configure logging for error tracking.
 - Enable email notifications for errors.
