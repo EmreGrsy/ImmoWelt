@@ -24,8 +24,3 @@ A tool to extract rental apartment data in Hamburg from ImmoWelt, with plans to 
 - Enable email notifications for errors.
 - Use LLMs for translation.
 - Develop a local Retrieval-Augmented Generation (RAG) chatbot.
-
-## Usage
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/<your-username>/ImmoWelt-web-scraper.git
