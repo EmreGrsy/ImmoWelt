@@ -10,7 +10,7 @@ A tool to extract rental apartments data in Hamburg from ImmoWelt, hopefully (wh
 - Saved parsed data to JSON.
 - Set up necessary libraries.
 
-### Pending
+### TODO
 - Configure logging for error tracking.
 - Enable email notifications for errors.
 - Use LLMs for data translation.
