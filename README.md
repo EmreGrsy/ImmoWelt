@@ -1,12 +1,32 @@
-# ImmoWelt webscapper
+# ImmoWelt Web Scraper
 
-A webscrapper (hopefully turned into a chatbot) for rental apartments in Hamburg.
+A tool to extract rental apartments data in Hamburg from ImmoWelt, hopefully (when I have time) will turn this into  Hamburg real estate chatbot.
 
-- [x] Text descriptions are not parsing, fix it.
-- [x] Make the parse file cleaner and concise.
-- [x] Save the parsed data to a JSON file.
-- [x] Build the necessary libraries and push it Repo.
-- [ ] Configure the logging for necessary stuff.
-- [ ] It should mail errors, but not info.
-- [ ] Use LLM to translate the data.
-- [ ] Build a RAG chatbot in local.
+## Features
+
+### Completed
+- Fixed text description parsing.
+- Simplified and optimized parsing logic.
+- Saved parsed data to JSON.
+- Set up necessary libraries.
+
+### Pending
+- Configure logging for error tracking.
+- Enable email notifications for errors.
+- Use LLMs for data translation.
+- Develop a local Retrieval-Augmented Generation (RAG) chatbot.
+
+## Usage
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/<your-username>/ImmoWelt-web-scraper.git
+   ```
+2. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Run the scraper:
+   ```bash
+   python scraper.py
+   ```
+4. Find the parsed data in `data.json`.
