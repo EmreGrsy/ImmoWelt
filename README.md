@@ -13,7 +13,7 @@ A tool to extract rental apartments data in Hamburg from ImmoWelt, hopefully (wh
 ### TODO
 - Configure logging for error tracking.
 - Enable email notifications for errors.
-- Use LLMs for data translation.
+- Use LLMs for translation.
 - Develop a local Retrieval-Augmented Generation (RAG) chatbot.
 
 ## Usage
